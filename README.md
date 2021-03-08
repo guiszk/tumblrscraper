@@ -1,4 +1,4 @@
-#tumblrscraper
+# tumblrscraper
 Scrape tumblr text posts by tag
 
 ## Usage
