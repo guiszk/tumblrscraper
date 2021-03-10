@@ -58,7 +58,6 @@ def get(tag):
             df = pd.DataFrame(pdict)
             print(pdict)
             df.to_csv(tag + '.csv', mode='a', index=False)
-            break
     browser.quit()
     time.sleep(10)
 for tag in tags:
