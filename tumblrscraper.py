@@ -2,7 +2,12 @@ import datetime
 import time
 
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+
+from bs4 import BeautifulSoup as bs
+
+import pandas as pd
 
 tags = [ #add your tags here
     'adventure-time',
@@ -21,7 +26,8 @@ def get(tag):
 
     elem = browser.find_element_by_tag_name('body')
 
-    no_of_pagedowns = 2000 #retrieves approx. 2000 lines, depending on the tag
+    no_of_pagedowns = 3000 #retrieves approx. 2000 lines, depending on the tag
+    #no_of_pagedowns = 10
     initial = no_of_pagedowns
 
     t = time.time()
@@ -34,14 +40,25 @@ def get(tag):
         print('[' + tag + '] (' + str(datetime.timedelta(seconds=td)) + ') ' + str(100-int((100*no_of_pagedowns)/initial)) + '%', end='\r')
 
     print()
-    post_elems = browser.find_elements_by_tag_name('p')
-    f = open(tag + '.txt', 'w')
+    post_elems = browser.find_elements_by_tag_name('article')
 
     for post in post_elems:
-        if(post.text):
-            f.write(post.text)
-            f.write('\n')
-    f.close()
+        soup = bs(post.get_attribute('innerHTML'), 'html.parser')
+        print()
+        p = soup.find('p')
+        if(p):
+            psplit = post.text.split('\n')
+            psplit.remove('Follow')
+            pdict = {
+                'user': pd.Categorical(psplit[0]),
+                'text': pd.Categorical(''.join(psplit[1:-2])),
+                'tags': pd.Categorical(', '.join(psplit[-2].split('#')[1:])),
+                'notes': pd.Categorical(int(psplit[-1].split()[0]))
+            }
+            df = pd.DataFrame(pdict)
+            print(pdict)
+            df.to_csv(tag + '.csv', mode='a', index=False)
+            break
     browser.quit()
     time.sleep(10)
 for tag in tags:

@@ -1,5 +1,5 @@
 # tumblrscraper
-Scrape tumblr text posts by tag
+Scrape tumblr text posts by tag without using the API
 
 ## Installation
 Install selenium with `pip install -r requirements.txt`
